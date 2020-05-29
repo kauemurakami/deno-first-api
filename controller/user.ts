@@ -27,7 +27,8 @@ let users: Array<IUser> = [{
 }];
 
 const getUsers = ({ response }: {
-   response: any }) => {
+  response: any
+}) => {
   response.body = users
 }
 
@@ -44,9 +45,9 @@ const getUser = ({ params, response }:
 }
 
 const addUser = async ({ request, response }: {
-   request: any; 
-   response: any 
-  }) => {
+  request: any;
+  response: any
+}) => {
   const body = await request.body()
   const user: IUser = body.value
 
@@ -59,36 +60,49 @@ const addUser = async ({ request, response }: {
 }
 
 const updateUser = async (
-  { params, request, response } : {
+  { params, request, response }: {
     params: { id: string };
     request: any;
     response: any;
   }) => {
-    let user: IUser | undefined = users.find(
-        (user) => user.id === params.id 
-      )
-      if(user){
-        const body = await request.body()
-        const updateUser: {
-          name? : string
-          email? : string
-        } = body.value
+  let user: IUser | undefined = users.find(
+    (user) => user.id === params.id
+  )
+  if (user) {
+    const body = await request.body()
+    const updateUser: {
+      name?: string
+      email?: string
+    } = body.value
 
-        user = {
-          //... copiando todos dados do user
-          //      ... pegando todos os dados de updateUser e sobrescreve user
-          ...user, ...updateUser, update_at: new Date() 
-        }
-          users = [
-            //...users copia todos os usuarios , menos o que estamos alterando, depois passamos o usuario que estamos alterando
-            ...users.filter( (user) => user.id !== params.id), user
-          ]
-          response.status = 200
-          response.body = {message : 'ok'}
-      }else {
-        response.status = 404
-        response.body = {message : "not found"}
-      }
+    user = {
+      //... copiando todos dados do user
+      //      ... pegando todos os dados de updateUser e sobrescreve user
+      ...user, ...updateUser, update_at: new Date()
+    }
+    users = [
+      //...users copia todos os usuarios , menos o que estamos alterando, depois passamos o usuario que estamos alterando
+      ...users.filter((user) => user.id !== params.id), user
+    ]
+    response.status = 200
+    response.body = { message: 'ok' }
+  } else {
+    response.status = 404
+    response.body = { message: "not found" }
   }
+}
 
-export { getUsers, getUser, addUser, updateUser };
+const deleteUser = (
+  { params, response }: {
+    params: { id: string };
+    response: any;
+  }) => {
+  users = users.filter( 
+    (user) => user.id !== params.id
+  );
+  response.body = {message : 'ok'}
+  response.status = 200
+}
+
+
+export { getUsers, getUser, addUser, updateUser, deleteUser };
